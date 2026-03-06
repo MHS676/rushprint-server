@@ -3,26 +3,26 @@ const nodemailer = require("nodemailer");
 const router = express.Router();
 
 function createTransporter() {
-    return nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASS,
-        },
-    });
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASS,
+    },
+  });
 }
 
 // POST /api/quote  (public – no auth needed)
 router.post("/", async (req, res) => {
-    const { name, email, phone, product, sku, quantity, color, totalCost, unitPrice, message } = req.body;
+  const { name, email, phone, product, sku, quantity, color, totalCost, unitPrice, message } = req.body;
 
-    if (!email || !product || !quantity) {
-        return res.status(400).json({ success: false, message: "Email, product, and quantity are required." });
-    }
+  if (!email || !product || !quantity) {
+    return res.status(400).json({ success: false, message: "Email, product, and quantity are required." });
+  }
 
-    const quoteEmail = process.env.QUOTE_EMAIL || process.env.GMAIL_USER;
+  const quoteEmail = process.env.QUOTE_EMAIL || process.env.GMAIL_USER;
 
-    const html = `
+  const html = `
     <div style="font-family:sans-serif;max-width:620px;margin:auto;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
       <div style="background:#1a1a2e;padding:24px 30px;text-align:center">
         <h1 style="color:#ff6b35;margin:0;font-size:26px">RushPrint</h1>
@@ -71,20 +71,20 @@ router.post("/", async (req, res) => {
     </div>
   `;
 
-    try {
-        const transporter = createTransporter();
-        await transporter.sendMail({
-            from: `"RushPrint Quotes" <${process.env.GMAIL_USER}>`,
-            to: quoteEmail,
-            replyTo: email,
-            subject: `New Quote Request: ${product} × ${quantity}`,
-            html,
-        });
-        res.json({ success: true, message: "Your request has been sent! We'll contact you shortly." });
-    } catch (err) {
-        console.error("Quote email error:", err.message);
-        res.status(500).json({ success: false, message: "Failed to send request. Please try again." });
-    }
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"RushPrint Quotes" <${process.env.GMAIL_USER}>`,
+      to: quoteEmail,
+      replyTo: email,
+      subject: `New Quote Request: ${product} × ${quantity}`,
+      html,
+    });
+    res.json({ success: true, message: "Your request has been sent! We'll contact you shortly." });
+  } catch (err) {
+    console.error("Quote email error:", err.message);
+    res.status(500).json({ success: false, message: "Failed to send request. Please try again." });
+  }
 });
 
 module.exports = router;
