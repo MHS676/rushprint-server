@@ -1,0 +1,87 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Product {
+    id              Int      @id @default(autoincrement())
+    name            String   @db.VarChar(255)
+    sku             String?  @db.VarChar(100)
+    description     String?  @db.Text
+    price           Decimal  @default(0) @db.Decimal(10, 2)
+    image           String?  @db.Text
+    category        String?  @db.VarChar(100)
+    rating          Decimal  @default(0) @db.Decimal(3, 1)
+    inStock         Boolean  @default(true) @map("in_stock")
+    lowerQty        Int      @default(0) @map("lower_qty")
+    lowerTotalCost  Decimal  @default(0) @map("lower_total_cost") @db.Decimal(10, 2)
+    lowerUnitPrice  Decimal  @default(0) @map("lower_unit_price") @db.Decimal(10, 2)
+    higherQty       Int      @default(0) @map("higher_qty")
+    higherTotalCost Decimal  @default(0) @map("higher_total_cost") @db.Decimal(10, 2)
+    higherUnitPrice Decimal  @default(0) @map("higher_unit_price") @db.Decimal(10, 2)
+    colors          String?  @default("") @db.Text
+    deliveryDays    Int      @default(3) @map("delivery_days")
+    colorEnabled    Boolean  @default(true) @map("color_enabled")
+    colorMode       String   @default("single") @map("color_mode") @db.VarChar(10)
+    createdAt       DateTime @default(now()) @map("created_at")
+
+    @@map("products")
+}
+
+model Banner {
+    id          Int      @id @default(autoincrement())
+    badge       String?  @default("🖨️ #1 Online Print Shop") @db.VarChar(255)
+    title       String?  @default("Your Ideas,") @db.VarChar(255)
+    highlight   String?  @default("Perfectly Printed.") @db.VarChar(255)
+    description String?  @default("From business cards to canvas art, we bring your creative vision to life with premium quality printing.") @db.Text
+    btn1Text    String?  @default("Shop Now") @map("btn1_text") @db.VarChar(100)
+    btn1Link    String?  @default("#products") @map("btn1_link") @db.VarChar(255)
+    btn2Text    String?  @default("Our Services") @map("btn2_text") @db.VarChar(100)
+    btn2Link    String?  @default("#") @map("btn2_link") @db.VarChar(255)
+    imageUrl    String?  @default("https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=600&q=80") @map("image_url") @db.Text
+    stat1Number String?  @default("10K+") @map("stat1_number") @db.VarChar(50)
+    stat1Label  String?  @default("Happy Clients") @map("stat1_label") @db.VarChar(100)
+    stat2Number String?  @default("50+") @map("stat2_number") @db.VarChar(50)
+    stat2Label  String?  @default("Products") @map("stat2_label") @db.VarChar(100)
+    stat3Number String?  @default("24hr") @map("stat3_number") @db.VarChar(50)
+    stat3Label  String?  @default("Delivery") @map("stat3_label") @db.VarChar(100)
+    sortOrder   Int      @default(1) @map("sort_order")
+    updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+    @@map("banner")
+}
+
+model Subscriber {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique @db.VarChar(255)
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("subscribers")
+}
+
+model QuoteRequest {
+    id        Int      @id @default(autoincrement())
+    name      String   @db.VarChar(255)
+    email     String   @db.VarChar(255)
+    phone     String?  @db.VarChar(50)
+    product   String?  @db.VarChar(255)
+    message   String?  @db.Text
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("quote_requests")
+}
+
+model ContactMessage {
+    id        Int      @id @default(autoincrement())
+    name      String   @db.VarChar(255)
+    email     String   @db.VarChar(255)
+    subject   String?  @db.VarChar(255)
+    message   String   @db.Text
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("contact_messages")
+}
