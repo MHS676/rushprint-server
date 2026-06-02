@@ -14,7 +14,7 @@ function createTransporter() {
 
 // POST /api/quote  (public – no auth needed)
 router.post("/", async (req, res) => {
-  const { name, email, phone, product, sku, quantity, color, totalCost, unitPrice, message } = req.body;
+  const { name, email, phone, product, sku, quantity, color, totalCost, unitPrice, shippingAddress, shippingCity, shippingState, shippingZip, message } = req.body;
 
   if (!email || !product || !quantity) {
     return res.status(400).json({ success: false, message: "Email, product, and quantity are required." });
@@ -57,6 +57,7 @@ router.post("/", async (req, res) => {
             <td style="padding:12px 16px;border:1px solid #e5e7eb"><a href="mailto:${email}" style="color:#2563eb">${email}</a></td>
           </tr>
           ${phone ? `<tr style="background:#f9fafb"><td style="padding:12px 16px;font-weight:700;color:#374151;border:1px solid #e5e7eb">Phone</td><td style="padding:12px 16px;color:#555;border:1px solid #e5e7eb">${phone}</td></tr>` : ""}
+          ${shippingAddress ? `<tr><td style="padding:12px 16px;font-weight:700;color:#374151;border:1px solid #e5e7eb">Shipping Address</td><td style="padding:12px 16px;color:#555;border:1px solid #e5e7eb">${shippingAddress}, ${shippingCity}, ${shippingState} ${shippingZip}</td></tr>` : ""}
         </table>
 
         ${message ? `<div style="background:#fef9ec;border:1px solid #fde68a;border-radius:8px;padding:16px;margin-bottom:24px"><strong style="color:#92400e">Message:</strong><p style="margin:8px 0 0;color:#374151;line-height:1.6">${message}</p></div>` : ""}

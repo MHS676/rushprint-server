@@ -20,7 +20,7 @@ router.post("/login", (req, res) => {
   const token = jwt.sign(
     { email: process.env.ADMIN_EMAIL, role: "admin" },
     process.env.JWT_SECRET,
-    { expiresIn: "12h" }
+    { expiresIn: "7d" }
   );
 
   res.json({ success: true, token, email: process.env.ADMIN_EMAIL });
