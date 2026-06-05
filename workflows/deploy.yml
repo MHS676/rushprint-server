@@ -1,0 +1,57 @@
+name: Deploy to Production VPS
+
+on:
+  push:
+    branches:
+      - main # Triggers the workflow on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        # This step is technically optional if all code is already on the server,
+        # but it's good practice to include it for potential future steps.
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Use 'set -e' to exit immediately if any command fails
+            set -e
+
+            echo "🚀 Starting deployment process..."
+
+            # --- Frontend Deployment ---
+            echo "🚚 Deploying Frontend..."
+            cd /var/www/rushprint-client
+            echo "Pulling latest changes for client..."
+            git pull origin main
+            echo "Installing client dependencies..."
+            npm install
+            echo "Building client for production..."
+            npm run build
+            echo "✅ Frontend deployed successfully."
+
+            # --- Backend Deployment ---
+            echo "🚚 Deploying Backend..."
+            cd /var/www/rushprint-server
+            echo "Pulling latest changes for server..."
+            git pull origin main
+            echo "Installing server dependencies..."
+            npm install
+            
+            # Optional: Run database migrations (uncomment if you use Prisma or similar)
+            # echo "Running database migrations..."
+            # npx prisma migrate deploy
+
+            echo "Restarting backend server with PM2..."
+            pm2 reload all --update-env
+            
+            echo "✅ Backend deployed successfully."
+            echo "🎉 Deployment Complete! Your updates are live."
